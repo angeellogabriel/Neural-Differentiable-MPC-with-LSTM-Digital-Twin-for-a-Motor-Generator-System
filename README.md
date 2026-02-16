@@ -1,60 +1,60 @@
+# Neural Differentiable MPC with LSTM Digital Twin (Motor–Generator 15V)
+
 This repository implements a fully data-driven control framework where:
+1) an **LSTM digital twin** identifies the motor–generator dynamics directly from I/O data, and  
+2) an **LSTM controller** is trained end-to-end through a **differentiable closed-loop simulation** to track references under constraints and disturbances.
 
-an LSTM digital twin identifies the motor–generator dynamics directly from I/O data, and
+> **Note:** The dataset used in this work is **private** (own experimental acquisition) and is not included in this repository.
 
-an LSTM controller is trained end-to-end through a differentiable closed-loop simulation to track references under constraints and disturbances.
+---
 
-Highlights
+## Highlights
+- ✅ LSTM plant identification from PRBS excitation (Ts ≈ 0.03 s)  
+- ✅ Multi-step rollout stability validated  
+- ✅ Differentiable closed-loop training (controller learns through the plant model)  
+- ✅ Disturbance-aware digital twin using `dist` (0/1) as exogenous input  
+- ✅ Fine-tuned disturbance-aware LSTM controller  
+- ✅ Robust tracking under real disturbance patterns
 
--LSTM plant model trained from PRBS excitation (Ts ≈ 0.03 s)
+---
 
--Multi-step rollout stability validated
+## Expected dataset format (private)
+Place your dataset file at:
 
--Differentiable closed-loop training (controller learns through the plant model)
 
--Disturbance-aware plant model using dist as an exogenous input
+Required columns:
+- `tempo` (float)
+- `segmento` (string)
+- `u_volts` (float)  ← actuation voltage
+- `y` (float)        ← measured terminal voltage
+- `dist` (int 0/1)   ← disturbance flag
 
--Fine-tuned disturbance-aware LSTM controller
+Example segments used:
+- `PRBS_LOW`, `PRBS_HIGH`, `STEPS_HIGH`, `PRBS_HIGH_DIST`
 
--Final robust tracking under real disturbance patterns (from dataset)
+---
 
-Dataset
+## Method Overview
 
-Input: u_volts (actuation voltage)
+### Plant identification (Digital Twin)
+One-step prediction:
+\[
+\hat{y}_{k+1} = f_\theta([u,y]_{k-w+1:k})
+\]
+Disturbance-aware version:
+\[
+\hat{y}_{k+1} = f_\theta([u,y,d]_{k-w+1:k})
+\]
 
-Output: y (measured terminal voltage)
+### Differentiable Controller Training
+The controller produces \(u_k\) to minimize:
+\[
+J = \sum_{k=1}^{T} Q e_k^2 + R u_k^2 + S (u_k-u_{k-1})^2 + Q_T e_T^2
+\]
+with \(e_k = r_k - \hat{y}_k\), subject to:
+\[
+0 \le u_k \le 15\text{ V}
+\]
 
-Disturbance flag: dist (0/1)
+---
 
-Segments: PRBS_LOW, PRBS_HIGH, STEPS_HIGH, PRBS_HIGH_DIST
-
-Method Overview
-
-Plant identification (Digital Twin):
-
-$𝑦^𝑘+1=𝑓𝜃([𝑢,𝑦]𝑘−𝑤+1:𝑘)$
-and disturbance-aware version:
-
-𝑦^𝑘+1=𝑓𝜃([𝑢,𝑦,𝑑]𝑘−𝑤+1:𝑘)
-
-Differentiable Controller Training:
-The controller produces 
-𝑢𝑘 to minimize:
-
-𝐽=∑𝑘=1𝑇𝑄𝑒𝑘²+𝑅𝑢𝑘²+𝑆(𝑢𝑘−𝑢𝑘−1)²+𝑄𝑇𝑒𝑇²
-
-with 
-𝑒𝑘=𝑟𝑘−𝑦^𝑘ek, subject to:
-
-0≤𝑢𝑘≤15V
-Key Results (example)
-
-Plant model (with disturbance): 1-step RMSE ≈ 0.025 V on PRBS_HIGH_DIST
-
-Robust closed-loop tracking with real disturbance patterns:
-
-RMSE ≈ 0.143 V
-
-IAE ≈ 31.65
-
-Control limits respected (u in [6.95, 13.42] V)
