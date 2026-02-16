@@ -61,4 +61,7 @@ Results:
 <img width="1728" height="1361" alt="closedloop_tracking_dist" src="https://github.com/user-attachments/assets/d5c8f223-ef96-405c-b162-a73d591817b3" />
 <img width="1688" height="1361" alt="control_input_u" src="https://github.com/user-attachments/assets/506253b8-2c06-43cc-a43e-801f1f3f212b" />
 <img width="1702" height="1361" alt="disturbance_profile" src="https://github.com/user-attachments/assets/c4381eee-675a-4f81-8adb-e1d8ef8d3cbc" />
+[summary_metrics.csv](https://github.com/user-attachments/files/25348198/summary_metrics.csv)
+RMSE_V,IAE,u_min_V,u_max_V,dist_percent
+0.14271368086338043,31.649505615234375,6.9515485763549805,13.415555000305176,16.500000655651093
 
