@@ -6,17 +6,17 @@ an LSTM controller is trained end-to-end through a differentiable closed-loop si
 
 Highlights
 
-✅ LSTM plant model trained from PRBS excitation (Ts ≈ 0.03 s)
+-LSTM plant model trained from PRBS excitation (Ts ≈ 0.03 s)
 
-✅ Multi-step rollout stability validated
+-Multi-step rollout stability validated
 
-✅ Differentiable closed-loop training (controller learns through the plant model)
+-Differentiable closed-loop training (controller learns through the plant model)
 
-✅ Disturbance-aware plant model using dist as an exogenous input
+-Disturbance-aware plant model using dist as an exogenous input
 
-✅ Fine-tuned disturbance-aware LSTM controller
+-Fine-tuned disturbance-aware LSTM controller
 
-✅ Final robust tracking under real disturbance patterns (from dataset)
+-Final robust tracking under real disturbance patterns (from dataset)
 
 Dataset
 
@@ -32,208 +32,21 @@ Method Overview
 
 Plant identification (Digital Twin):
 
-𝑦
-^
-𝑘
-+
-1
-=
-𝑓
-𝜃
-(
-[
-𝑢
-,
-𝑦
-]
-𝑘
-−
-𝑤
-+
-1
-:
-𝑘
-)
-y
-^
-	​
-
-k+1
-	​
-
-=f
-θ
-	​
-
-([u,y]
-k−w+1:k
-	​
-
-)
-
+$𝑦^𝑘+1=𝑓𝜃([𝑢,𝑦]𝑘−𝑤+1:𝑘)$
 and disturbance-aware version:
 
-𝑦
-^
-𝑘
-+
-1
-=
-𝑓
-𝜃
-(
-[
-𝑢
-,
-𝑦
-,
-𝑑
-]
-𝑘
-−
-𝑤
-+
-1
-:
-𝑘
-)
-y
-^
-	​
-
-k+1
-	​
-
-=f
-θ
-	​
-
-([u,y,d]
-k−w+1:k
-	​
-
-)
+𝑦^𝑘+1=𝑓𝜃([𝑢,𝑦,𝑑]𝑘−𝑤+1:𝑘)
 
 Differentiable Controller Training:
 The controller produces 
-𝑢
-𝑘
-u
-k
-	​
+𝑢𝑘 to minimize:
 
- to minimize:
-
-𝐽
-=
-∑
-𝑘
-=
-1
-𝑇
-𝑄
-𝑒
-𝑘
-2
-+
-𝑅
-𝑢
-𝑘
-2
-+
-𝑆
-(
-𝑢
-𝑘
-−
-𝑢
-𝑘
-−
-1
-)
-2
-+
-𝑄
-𝑇
-𝑒
-𝑇
-2
-J=
-k=1
-∑
-T
-	​
-
-Qe
-k
-2
-	​
-
-+Ru
-k
-2
-	​
-
-+S(u
-k
-	​
-
-−u
-k−1
-	​
-
-)
-2
-+Q
-T
-	​
-
-e
-T
-2
-	​
-
+𝐽=∑𝑘=1𝑇𝑄𝑒𝑘²+𝑅𝑢𝑘²+𝑆(𝑢𝑘−𝑢𝑘−1)²+𝑄𝑇𝑒𝑇²
 
 with 
-𝑒
-𝑘
-=
-𝑟
-𝑘
-−
-𝑦
-^
-𝑘
-e
-k
-	​
+𝑒𝑘=𝑟𝑘−𝑦^𝑘ek, subject to:
 
-=r
-k
-	​
-
-−
-y
-^
-	​
-
-k
-	​
-
-, subject to:
-
-0
-≤
-𝑢
-𝑘
-≤
-15
- V
-0≤u
-k
-	​
-
-≤15 V
+0≤𝑢𝑘≤15V
 Key Results (example)
 
 Plant model (with disturbance): 1-step RMSE ≈ 0.025 V on PRBS_HIGH_DIST
