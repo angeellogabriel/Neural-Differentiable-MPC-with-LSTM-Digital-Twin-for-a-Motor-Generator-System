@@ -1,0 +1,1 @@
+# Neural-Differentiable-MPC-with-LSTM-Digital-Twin-for-a-Motor-Generator-System
