@@ -1,67 +1,99 @@
-# Neural Differentiable MPC with LSTM Digital Twin (Motor–Generator 15V)
+Neural Differentiable MPC with LSTM Digital Twin
+(Motor–Generator 15V Experimental Platform)
 
-This repository implements a fully data-driven control framework where:
-1) an **LSTM digital twin** identifies the motor–generator dynamics directly from I/O data, and  
-2) an **LSTM controller** is trained end-to-end through a **differentiable closed-loop simulation** to track references under constraints and disturbances.
+This repository presents a fully data-driven nonlinear control framework based on a differentiable architecture composed of:
 
-> **Note:** The dataset used in this work is **private** (own experimental acquisition) and is not included in this repository.
+An LSTM Digital Twin trained from experimental I/O data.
 
----
+An end-to-end trainable neural controller optimized through a differentiable closed-loop simulation.
 
-## Highlights
-- ✅ LSTM plant identification from PRBS excitation (Ts ≈ 0.03 s)  
-- ✅ Multi-step rollout stability validated  
-- ✅ Differentiable closed-loop training (controller learns through the plant model)  
-- ✅ Disturbance-aware digital twin using `dist` (0/1) as exogenous input  
-- ✅ Fine-tuned disturbance-aware LSTM controller  
-- ✅ Robust tracking under real disturbance patterns
+The controller is trained directly through the plant model using backpropagation, enabling gradient-based optimization of long-horizon tracking performance under constraints and disturbances.
 
----
+⚠️ The dataset used in this work is private (own experimental acquisition) and is not included in this repository.
 
-## Expected dataset format (private)
-Place your dataset file at:
+🚀 Main Contributions
+
+Data-driven identification of nonlinear motor–generator dynamics using LSTM
+
+Multi-step stable rollout validation
+
+Fully differentiable closed-loop control training
+
+Disturbance-aware digital twin using exogenous input dist ∈ {0,1}
+
+Fine-tuned disturbance-aware LSTM controller
+
+Robust tracking under real disturbance profiles
+
+⚙️ Experimental Setup
+
+Sampling time: Ts ≈ 0.03 s
+
+Actuation range: 0–15 V
+
+Output: generator terminal voltage
+
+Excitation signals:
+
+PRBS_LOW
+
+PRBS_HIGH
+
+STEPS_HIGH
+
+PRBS_HIGH_DIST
+
+📊 Plant Identification (Digital Twin)
+
+One-step prediction model:
+$$
+\hat{y}_{k+1} = f_\theta\big([u,y]_{k-w+1:k}\big)
+$$
+Disturbance-aware model:
+$$
+\hat{y}_{k+1} = f_\theta\big([u,y,d]_{k-w+1:k}\big)
+$$
+Where $u_k$ is the input voltage.
 
 
-Required columns:
-- `tempo` (float)
-- `segmento` (string)
-- `u_volts` (float)  ← actuation voltage
-- `y` (float)        ← measured terminal voltage
-- `dist` (int 0/1)   ← disturbance flag
+Differentiable Controller Training
 
-Example segments used:
-- `PRBS_LOW`, `PRBS_HIGH`, `STEPS_HIGH`, `PRBS_HIGH_DIST`
+The neural controller outputs $u_k$​ and is optimized through the differentiable digital twin by minimizing:
+$$
+J =
+\sum_{k=1}^{T}
+\left(
+Q e_k^2
++
+R u_k^2
++
+S (u_k - u_{k-1})^2
+\right)
++
+Q_T e_T^2
+$$
+with:
+$$
+e_k = r_k - \hat{y}_k
+$$
+Subject to:
+$$
+0 \le u_k \le 15 \text{ V}
+$$
 
----
+This enables gradient-based optimization of closed-loop performance.
 
-## Method Overview
+Final Results (Disturbance-aware Controller)
 
-### Plant identification (Digital Twin)
-One-step prediction:
-$\[
-\hat{y}_{k+1} = f_\theta([u,y]_{k-w+1:k})
-\]$
-Disturbance-aware version:
-$\[
-\hat{y}_{k+1} = f_\theta([u,y,d]_{k-w+1:k})
-\]$
+Closed-loop test using real disturbance profile:
 
-### Differentiable Controller Training
-The controller produces \(u_k\) to minimize:
-$\[
-J = \sum_{k=1}^{T} Q e_k^2 + R u_k^2 + S (u_k-u_{k-1})^2 + Q_T e_T^2
-\]$
-with $\(e_k = r_k - \hat{y}_k\)$, subject to:
-$\[
-0 \le u_k \le 15\text{ V}
-\]$
-
----
-Results:
-<img width="1728" height="1361" alt="closedloop_tracking_dist" src="https://github.com/user-attachments/assets/d5c8f223-ef96-405c-b162-a73d591817b3" />
-<img width="1688" height="1361" alt="control_input_u" src="https://github.com/user-attachments/assets/506253b8-2c06-43cc-a43e-801f1f3f212b" />
-<img width="1702" height="1361" alt="disturbance_profile" src="https://github.com/user-attachments/assets/c4381eee-675a-4f81-8adb-e1d8ef8d3cbc" />
-[summary_metrics.csv](https://github.com/user-attachments/files/25348198/summary_metrics.csv)
-RMSE_V,IAE,u_min_V,u_max_V,dist_percent
-0.14271368086338043,31.649505615234375,6.9515485763549805,13.415555000305176,16.500000655651093
+Metric	Value
+RMSE (V)	0.1427
+IAE	31.6495
+u_min (V)	6.95
+u_max (V)	13.41
+Disturbance rate	16.5%
+<img width="1728" height="1361" alt="closedloop_tracking_dist" src="https://github.com/user-attachments/assets/64fa7f04-b26d-4eda-95d2-7036573611f3" />
+<img width="1688" height="1361" alt="control_input_u" src="https://github.com/user-attachments/assets/88df1a6d-b568-49c0-b415-4cc6fa37e3b4" />
+<img width="1702" height="1361" alt="disturbance_profile" src="https://github.com/user-attachments/assets/6c037e30-cf8a-4eff-a661-071cfd494a37" />
 
