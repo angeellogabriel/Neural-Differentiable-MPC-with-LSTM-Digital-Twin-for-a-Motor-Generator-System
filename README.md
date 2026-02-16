@@ -38,23 +38,23 @@ Example segments used:
 
 ### Plant identification (Digital Twin)
 One-step prediction:
-\[
+$\[
 \hat{y}_{k+1} = f_\theta([u,y]_{k-w+1:k})
-\]
+\]$
 Disturbance-aware version:
-\[
+$\[
 \hat{y}_{k+1} = f_\theta([u,y,d]_{k-w+1:k})
-\]
+\]$
 
 ### Differentiable Controller Training
 The controller produces \(u_k\) to minimize:
-\[
+$\[
 J = \sum_{k=1}^{T} Q e_k^2 + R u_k^2 + S (u_k-u_{k-1})^2 + Q_T e_T^2
-\]
-with \(e_k = r_k - \hat{y}_k\), subject to:
-\[
+\]$
+with $\(e_k = r_k - \hat{y}_k\)$, subject to:
+$\[
 0 \le u_k \le 15\text{ V}
-\]
+\]$
 
 ---
 
