@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.dist/
+build/
+.env
+.venv
+env/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+*.nbconvert.ipynb
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data / private
+data/
+*.csv
+*.parquet
+*.xlsx
+*.npy
+*.npz
+
+# Models / artifacts
+checkpoints/
+models/
+*.pt
+*.pth
+
+# Results (optional: you may want to keep figs; if so, remove these)
+# results/
